@@ -5,7 +5,7 @@ import logsHandler from "./routes/logs.route.js";
 const app = express();
 app.use(bodyParser.json({ limit: "50mb" }));
 
-app.use("/logs", logsHandler);
+app.use("/api/logs", logsHandler);
 
 app.get("/", (req, res) => {
   res.status(200).json({ message: "Hello World!" });
