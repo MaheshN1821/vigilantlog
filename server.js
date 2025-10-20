@@ -1,9 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser";
-import dotenv from "dotenv";
 import logsHandler from "./routes/logs.route.js";
 
-dotenv.config();
 const app = express();
 app.use(bodyParser.json({ limit: "50mb" }));
 
@@ -13,4 +11,6 @@ app.get("/", (req, res) => {
   res.status(200).json({ message: "Hello World!" });
 });
 
-export default app;
+app.listen(3000, () => {
+  console.log("Server is listening at 3000...");
+});
