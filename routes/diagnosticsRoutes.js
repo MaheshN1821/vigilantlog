@@ -24,12 +24,7 @@ router.post("/part-one", async (req, res) => {
     let crashData = req.body;
     if (Array.isArray(crashData) && crashData.length > 0) {
       crashData = crashData[0];
-      console.log("Part-One received as array, extracting first element");
     }
-    console.log(`Part-One payload received:`);
-    console.log(`Body is empty: ${Object.keys(crashData).length === 0}`);
-    console.log(`Body keys:`, Object.keys(crashData));
-    console.log(`Full body:`, JSON.stringify(crashData).substring(0, 200));
 
     console.log(`Part-One received from ${ipAddress}`);
 
