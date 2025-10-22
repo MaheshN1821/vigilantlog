@@ -21,8 +21,11 @@ function getClientIP(req) {
 router.post("/part-one", async (req, res) => {
   try {
     const ipAddress = getClientIP(req);
-    const crashData = req.body;
-
+    let crashData = req.body;
+    if (Array.isArray(crashData) && crashData.length > 0) {
+      crashData = crashData[0];
+      console.log("Part-One received as array, extracting first element");
+    }
     console.log(`Part-One payload received:`);
     console.log(`Body is empty: ${Object.keys(crashData).length === 0}`);
     console.log(`Body keys:`, Object.keys(crashData));
