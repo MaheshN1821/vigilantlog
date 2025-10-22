@@ -1,4 +1,4 @@
-import { CrashLog, SystemLog } from "../models/Logs.js";
+import { CrashLog, SystemLog } from "../models/CombinedDiagnostics.js";
 
 function getClientIp(req) {
   return (

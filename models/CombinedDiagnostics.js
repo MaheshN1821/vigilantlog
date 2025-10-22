@@ -106,7 +106,7 @@ const EnergyErrorSchema = new mongoose.Schema(
 
 const EnergyReportSchema = new mongoose.Schema(
   {
-    engeryErrors: [EnergyErrorSchema],
+    energyErrors: [EnergyErrorSchema],
     warnings: [EnergyErrorSchema],
   },
   { _id: false }
@@ -187,38 +187,77 @@ const ReliabilityEventSchema = new mongoose.Schema(
   { _id: false }
 );
 
-const SystemDataSchema = new mongoose.Schema({
-  powercfg: PowercfgSchema,
-  hardware_events: [HardwareEventSchema],
-  application_events: [ApplicationEventSchema],
-  perfmon: [PerfmonSchema],
-  reliability: [ReliabilityEventSchema],
-  ipAddress: String,
-  createdAt: { type: Date, default: Date.now },
-  deviceName: String,
-  linkedCrashLogId: { type: mongoose.Schema.Types.ObjectId, ref: "CrashLog" },
-});
+// COMBINED SCHEMA - All data in one document
+const CombinedDiagnosticsSchema = new mongoose.Schema(
+  {
+    // Identifiers
+    deviceName: { type: String, required: true, index: true },
+    ipAddress: { type: String, required: true },
+    uniqueIdentifier: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true,
+    },
 
-const CrashDataSchema = new mongoose.Schema({
-  minidumps: [MinidumpSchema],
-  minidump_analyses: [MinidumpAnalysisSchema],
-  full_memory_dump: FullMemoryDumpSchema,
-  system_log_available: Boolean,
-  system_events: [SystemEventSchema],
-  wer_enabled: Boolean,
-  wer_reports: [WERReportSchema],
-  driver_verifier: DriverVerifierSchema,
-  ipAddress: String,
-  createdAt: { type: Date, default: Date.now },
-  deviceName: String,
-  linkedSystemLogId: { type: mongoose.Schema.Types.ObjectId, ref: "SystemLog" },
-});
+    // Crash Data (from API 1)
+    crash_data: {
+      minidumps: [MinidumpSchema],
+      minidump_analyses: [MinidumpAnalysisSchema],
+      full_memory_dump: FullMemoryDumpSchema,
+      system_log_available: Boolean,
+      system_events: [SystemEventSchema],
+      wer_enabled: Boolean,
+      wer_reports: [WERReportSchema],
+      driver_verifier: DriverVerifierSchema,
+    },
 
-CrashDataSchema.index({ deviceName: 1 });
-CrashDataSchema.index({ ipAddress: 1, createdAt: 1 });
+    // System Data (from API 2)
+    system_data: {
+      powercfg: PowercfgSchema,
+      hardware_events: [HardwareEventSchema],
+      application_events: [ApplicationEventSchema],
+      perfmon: [PerfmonSchema],
+      reliability: [ReliabilityEventSchema],
+      timestamp: String,
+    },
 
-SystemDataSchema.index({ deviceName: 1 });
-SystemDataSchema.index({ ipAddress: 1, createdAt: 1 });
+    // Metadata
+    api1ReceivedAt: Date,
+    api2ReceivedAt: Date,
+    mergedAt: Date,
+    timeDifference: Number,
 
-export const CrashLog = mongoose.model("CrashLog", CrashDataSchema);
-export const SystemLog = mongoose.model("SystemLog", SystemDataSchema);
+    // TTL - Auto-delete after 2 hours
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      expires: 7200,
+      index: true,
+    },
+  },
+  {
+    timestamps: true,
+    collection: "combined_diagnostics",
+  }
+);
+
+// Compound indexes
+CombinedDiagnosticsSchema.index({ deviceName: 1, createdAt: -1 });
+CombinedDiagnosticsSchema.index({ ipAddress: 1, createdAt: -1 });
+
+// Static method
+CombinedDiagnosticsSchema.statics.getDevicesWithCrashes = async function (
+  hours = 24
+) {
+  const startTime = new Date(Date.now() - hours * 60 * 60 * 1000);
+  return this.distinct("deviceName", {
+    createdAt: { $gte: startTime },
+    "crash_data.minidumps.0": { $exists: true },
+  });
+};
+
+export const CombinedDiagnostics = mongoose.model(
+  "CombinedDiagnostics",
+  CombinedDiagnosticsSchema
+);
