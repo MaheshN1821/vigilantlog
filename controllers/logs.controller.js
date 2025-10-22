@@ -1,23 +1,52 @@
-const partOneController = (req, res) => {
+import { CrashLog, SystemLog } from "../models/Logs.js";
+
+function getClientIp(req) {
+  return (
+    req.headers["x-forwarded-for"]?.split(",")[0] ||
+    req.connection.remoteAddress
+  );
+}
+
+const partOneController = async (req, res) => {
   try {
+    const ipAddress = getClientIp(req);
     const logs = req.body;
     const logsArray = Array.isArray(logs) ? logs : [logs];
 
-    console.log("logs_part_one.json Logs written in flogs_part_one.json");
-    res.status(200).send("logs_part_one.json stored!");
+    for (const log of logsArray) {
+      const crashLog = new CrashLog({
+        ...log,
+        ipAddress,
+        createdAt: new Date(),
+      });
+      await crashLog.save();
+    }
+
+    console.log("Crash logs stored!");
+    res.status(200).send("Crash logs stored!");
   } catch (err) {
     console.error("Error processing logs:", err);
     res.status(500).send("Failed to process logs");
   }
 };
 
-const partTwoController = (req, res) => {
+const partTwoController = async (req, res) => {
   try {
+    const ipAddress = getClientIp(req);
     const logs = req.body;
     const logsArray = Array.isArray(logs) ? logs : [logs];
 
-    console.log("logs_part_two.json Logs written in logs_part_two.json");
-    res.status(200).send("logs_part_two.json Logs stored!");
+    for (const log of logsArray) {
+      const systemLog = new SystemLog({
+        ...log,
+        ipAddress,
+        createdAt: new Date(),
+      });
+      await systemLog.save();
+    }
+
+    console.log("System logs stored!");
+    res.status(200).send("System Logs stored!");
   } catch (err) {
     console.error("Error processing logs:", err);
     res.status(500).send("Failed to process logs");
