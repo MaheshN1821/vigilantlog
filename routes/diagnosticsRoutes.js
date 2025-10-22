@@ -23,6 +23,11 @@ router.post("/part-one", async (req, res) => {
     const ipAddress = getClientIP(req);
     const crashData = req.body;
 
+    console.log(`Part-One payload received:`);
+    console.log(`Body is empty: ${Object.keys(crashData).length === 0}`);
+    console.log(`Body keys:`, Object.keys(crashData));
+    console.log(`Full body:`, JSON.stringify(crashData).substring(0, 200));
+
     console.log(`Part-One received from ${ipAddress}`);
 
     // Store in Upstash Redis
