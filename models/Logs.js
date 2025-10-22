@@ -106,7 +106,7 @@ const EnergyErrorSchema = new mongoose.Schema(
 
 const EnergyReportSchema = new mongoose.Schema(
   {
-    errors: [EnergyErrorSchema],
+    engeryErrors: [EnergyErrorSchema],
     warnings: [EnergyErrorSchema],
   },
   { _id: false }
