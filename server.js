@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cron from "node-cron";
 import mongoose from "mongoose";
+import cors from "cors";
 import dotenv from "dotenv";
 import correlateLogs from "./controllers/correlateLogs.js";
 import logsHandler from "./routes/logs.route.js";
