@@ -4,6 +4,10 @@ import { CombinedDiagnostics } from "../models/CombinedDiagnostics.js";
 // Configuration
 const FLASK_SERVER_URL = process.env.FLASK_SERVER_URL;
 
+if (!FLASK_SERVER_URL) {
+  console.log("Flask URL missing!");
+}
+
 /**
  * System Diagnostics Prediction Controller
  * Handles BSOD, Hang, Shutdown, and Application Crash predictions
