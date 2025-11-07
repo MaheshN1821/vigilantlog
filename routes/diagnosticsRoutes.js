@@ -77,7 +77,7 @@ router.post("/part-two", async (req, res) => {
     const ipAddress = getClientIP(req);
     const systemData = req.body;
 
-    console.log(`📥 Part-Two received from ${ipAddress}`);
+    console.log(`Part-Two received from ${ipAddress}`);
 
     // Store and attempt merge
     const result = await logMergerService.storePartTwo(ipAddress, systemData);
