@@ -5,6 +5,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import logsHandler from "./routes/diagnosticsRoutes.js";
 import predictionHandler from "./routes/prediction.route.js";
+import authHandler from "./routes/auth.route.js";
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ app.use((req, res, next) => {
 // Routes
 app.use("/api/logs", logsHandler);
 app.use("/api/prediction", predictionHandler);
+app.use("/api/auth", authHandler);
 
 app.get("/", (req, res) => {
   res.status(200).json({
