@@ -295,7 +295,7 @@ ${JSON.stringify(logs, null, 2)}
 
 		const recoveryContent = recoveryData.choices[0].message.content;
 
-		console.log("Recovery Steps Generated:", recoveryContent);
+		// console.log("Recovery Steps Generated:", recoveryContent);
 
 		return {
 			issueType: type,
