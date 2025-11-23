@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import logsHandler from "./routes/diagnosticsRoutes.js";
 import predictionHandler from "./routes/prediction.route.js";
 import authHandler from "./routes/auth.route.js";
+import recoveryHandler from "./routes/data.route.js";
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.use((req, res, next) => {
 app.use("/api/logs", logsHandler);
 app.use("/api/prediction", predictionHandler);
 app.use("/api/auth", authHandler);
+app.use("/api/recovery",recoveryHandler);
 
 app.get("/", (req, res) => {
   res.status(200).json({
